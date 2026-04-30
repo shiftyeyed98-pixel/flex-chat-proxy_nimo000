@@ -18,12 +18,7 @@ export default async function handler(req, res) {
     html = html.replace("<head>", `<head>${baseTag}`);
 
     // =========================
-    // ✅ 2. 상대경로 → 절대경로 변환
-    // =========================
-    html = html.replace(/(src|href)="\.\.\//g, '$1="https://flexhp.kr/');
-
-    // =========================
-    // ✅ 3. CSS 삽입
+    // ✅ 2. CSS 삽입
     // =========================
     const customCSS = `
     <style>
@@ -61,7 +56,7 @@ export default async function handler(req, res) {
     html = html.replace("</head>", `${customCSS}</head>`);
 
     // =========================
-    // ✅ 4. 캐싱 방지 (추가 권장)
+    // ✅ 3. 캐싱 방지 (추가 권장)
     // =========================
     res.setHeader("Cache-Control", "no-store");
 
