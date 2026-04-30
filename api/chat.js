@@ -22,12 +22,12 @@ export default async function handler(req, res) {
     html = html.replace(/href="\.\.\/\.\.\//g, 'href="https://flexhp.kr/');
 
     // 그 다음 1단계
-    html = html.replace(/src="\.\.\//g, 'src="https://flexhp.kr/');
-    html = html.replace(/href="\.\.\//g, 'href="https://flexhp.kr/');
+    html = html.replace(/src="\.\.\//g, 'src="https://flexhp.kr/pages/');
+    html = html.replace(/href="\.\.\//g, 'href="https://flexhp.kr/pages/');
 
-    // 🔥 win_chat.js 보정 (필수)
+    // 🔥 win_chat.js 강제 보정
     html = html.replace(
-      'src="https://flexhp.kr/win_chat.js',
+      'src="https://flexhp.kr/pages/win_chat.js',
       'src="https://flexhp.kr/pages/chat/win_chat.js'
     );
 
