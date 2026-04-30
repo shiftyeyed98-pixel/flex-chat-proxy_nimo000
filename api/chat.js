@@ -15,21 +15,24 @@ export default async function handler(req, res) {
     let html = await response.text();
 
     // =========================
-    // ✅ [1] 경로 보정 (JS/CSS 깨짐 방지)
+    // ✅ [1] win_chat.js 먼저 보정 (가장 중요)
     // =========================
+    html = html.replace(
+      /src="\.\.\/win_chat\.js/g,
+      'src="https://flexhp.kr/pages/chat/win_chat.js'
+    );
+
+    // =========================
+    // ✅ [2] 경로 보정
+    // =========================
+
     // 깊은 경로 먼저
     html = html.replace(/src="\.\.\/\.\.\//g, 'src="https://flexhp.kr/');
     html = html.replace(/href="\.\.\/\.\.\//g, 'href="https://flexhp.kr/');
 
-    // 그 다음 1단계
+    // 1단계 경로
     html = html.replace(/src="\.\.\//g, 'src="https://flexhp.kr/pages/');
     html = html.replace(/href="\.\.\//g, 'href="https://flexhp.kr/pages/');
-
-    // 🔥 win_chat.js 강제 보정
-    html = html.replace(
-      'src="https://flexhp.kr/pages/win_chat.js',
-      'src="https://flexhp.kr/pages/chat/win_chat.js'
-    );
 
     // =========================
     // 2. 커스텀 CSS
