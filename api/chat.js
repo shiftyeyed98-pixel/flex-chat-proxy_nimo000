@@ -10,29 +10,34 @@ export default async function handler(req, res) {
 
     let html = await response.text();
 
-    // 🔥 여기서 CSS 강제 삽입
+    // =========================
+    // ✅ 1. base 태그 추가
+    // =========================
+    const baseTag = `<base href="https://flexhp.kr/">`;
+
+    html = html.replace("<head>", `<head>${baseTag}`);
+
+    // =========================
+    // ✅ 2. 상대경로 → 절대경로 변환
+    // =========================
+    html = html.replace(/(src|href)="\.\.\//g, '$1="https://flexhp.kr/');
+
+    // =========================
+    // ✅ 3. CSS 삽입
+    // =========================
     const customCSS = `
     <style>
-      /* ===== 내부 margin 제거 ===== */
-      .chat-list li p {
-        margin: 0 !important;
-      }
+      .chat-list li p { margin: 0 !important; }
 
-      /* ===== 세트 간 간격 ===== */
       .chat-list {
         display: flex;
         flex-direction: column;
         gap: 4px !important;
       }
 
-      .chat-list li {
-        margin: 0 !important;
-      }
+      .chat-list li { margin: 0 !important; }
 
-      /* ===== 닉네임 / 채팅 ===== */
-      .nickname {
-        margin: 0 0 2px 0 !important;
-      }
+      .nickname { margin: 0 0 2px 0 !important; }
 
       .txt {
         margin: 0 !important;
@@ -41,7 +46,6 @@ export default async function handler(req, res) {
         word-break: break-word !important;
       }
 
-      /* ===== 불필요 패딩 제거 ===== */
       .chat-list-area {
         padding: 0 !important;
       }
@@ -53,8 +57,13 @@ export default async function handler(req, res) {
     </style>
     `;
 
-    // </head> 앞에 CSS 삽입
+    // head 닫히기 전에 삽입
     html = html.replace("</head>", `${customCSS}</head>`);
+
+    // =========================
+    // ✅ 4. 캐싱 방지 (추가 권장)
+    // =========================
+    res.setHeader("Cache-Control", "no-store");
 
     res.setHeader("Content-Type", "text/html; charset=utf-8");
     res.status(200).send(html);
