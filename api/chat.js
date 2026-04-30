@@ -15,13 +15,24 @@ export default async function handler(req, res) {
     let html = await response.text();
 
     // =========================
-    // 2. base 태그 삽입 (상대경로 정상화 핵심)
+    // ✅ [1] 경로 보정 (JS/CSS 깨짐 방지)
     // =========================
-    const baseTag = `<base href="https://flexhp.kr/pages/chat/">`;
-    html = html.replace("<head>", `<head>${baseTag}`);
+    // 깊은 경로 먼저
+    html = html.replace(/src="\.\.\/\.\.\//g, 'src="https://flexhp.kr/');
+    html = html.replace(/href="\.\.\/\.\.\//g, 'href="https://flexhp.kr/');
+
+    // 그 다음 1단계
+    html = html.replace(/src="\.\.\//g, 'src="https://flexhp.kr/');
+    html = html.replace(/href="\.\.\//g, 'href="https://flexhp.kr/');
+
+    // 🔥 win_chat.js 보정 (필수)
+    html = html.replace(
+      'src="https://flexhp.kr/win_chat.js',
+      'src="https://flexhp.kr/pages/chat/win_chat.js'
+    );
 
     // =========================
-    // 3. 커스텀 CSS
+    // 2. 커스텀 CSS
     // =========================
     const customCSS = `
     <style>
@@ -75,12 +86,15 @@ export default async function handler(req, res) {
       html = customCSS + html;
     }
 
-    // =========================
-    // 5. 캐싱 방지 (실시간 채팅 필수)
-    // =========================
+    res.setHeader("Content-Type", "text/html; charset=utf-8");
+
+    // 👉 iframe / 외부 실행 허용
+    res.setHeader("X-Frame-Options", "ALLOWALL");
+    res.setHeader("Content-Security-Policy", "frame-ancestors *");
+
+    // 👉 캐싱 방지 (실시간 채팅 필수)
     res.setHeader("Cache-Control", "no-store");
 
-    res.setHeader("Content-Type", "text/html; charset=utf-8");
     res.status(200).send(html);
 
   } catch (err) {
